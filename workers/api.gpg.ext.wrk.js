@@ -2,7 +2,6 @@
 
 const { WrkApi } = require('bfx-wrk-api')
 const async = require('async')
-// eslint-disable-next-line no-unused-vars
 const argv = require('yargs')
   .option('isLoggerDisabled', {
     type: 'boolean',
@@ -17,9 +16,13 @@ class WrkExtGpgApi extends WrkApi {
   constructor (conf, ctx) {
     super(conf, ctx)
 
-    this.logger = logger
-
     this.loadConf('gpg.ext', 'ext')
+
+    this.logger = logger(
+      argv.isLoggerDisabled ||
+      conf.ext.isLoggerDisabled
+    )
+
     this.init()
     this.start()
   }

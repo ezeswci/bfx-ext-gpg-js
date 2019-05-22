@@ -24,7 +24,6 @@ const isTestEnv = (
   argv.env === 'test' ||
   process.env.NODE_ENV === 'test'
 )
-const isLoggerDisabled = argv.isLoggerDisabled
 
 const basePath = '../../../logs'
 const ext = '.log'
@@ -50,15 +49,22 @@ const _combineFormat = (colorize = !isProdEnv) => {
     timestamp(),
     align(),
     printf(obj => {
-      let str = `${obj.label}:${obj.level.toUpperCase()} [${obj.timestamp}]`
+      const str = `${obj.label}:${obj.level.toUpperCase()}`
+      const ts = `[${obj.timestamp}]`
 
       if (colorize) {
-        str = obj.level === 'error'
+        const colorStr = obj.level === 'error'
           ? str.red
           : str.blue
+        const colorTs = ts.rainbow
+        const colorMessage = obj.level === 'error'
+          ? `${obj.message}`.red
+          : `${obj.message}`.blue
+
+        return `${colorStr} ${colorTs} ${colorMessage}`
       }
 
-      return `${str} ${obj.message}`
+      return `${str} ${ts} ${obj.message}`
     })
   )
 }
@@ -91,15 +97,6 @@ if (isProdEnv) {
     })
   )
 }
-
-const logger = createLogger({
-  format: _combineFormat(),
-  transports: baseTransports,
-  exceptionHandlers,
-  silent: isLoggerDisabled || isTestEnv,
-  exitOnError: false
-})
-
 if (exceptionHandlers[0]) {
   exceptionHandlers[0].on('logged', () => {
     setTimeout(() => {
@@ -108,4 +105,12 @@ if (exceptionHandlers[0]) {
   })
 }
 
-module.exports = logger
+module.exports = (isLoggerDisabled) => {
+  return createLogger({
+    format: _combineFormat(),
+    transports: baseTransports,
+    exceptionHandlers,
+    silent: isLoggerDisabled || isTestEnv,
+    exitOnError: false
+  })
+}
