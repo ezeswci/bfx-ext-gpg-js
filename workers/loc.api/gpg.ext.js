@@ -4,7 +4,8 @@ const { Api } = require('bfx-wrk-api')
 
 const {
   checkArgs,
-  checkFile
+  checkFile,
+  responder
 } = require('./helpers')
 const {
   getDigitalSignature,
@@ -13,7 +14,7 @@ const {
 
 class ExtGpg extends Api {
   getDigitalSignature (space, file, args, cb) {
-    return this._responser(async () => {
+    return responder(async () => {
       checkFile(file)
       await checkArgs(args, 'getDigitalSignatureArgsSchema')
 
@@ -22,7 +23,7 @@ class ExtGpg extends Api {
   }
 
   verifyDigitalSignature (space, file, args, cb) {
-    return this._responser(async () => {
+    return responder(async () => {
       checkFile(file)
       await checkArgs(args, 'verifyDigitalSignatureArgsSchema')
 
@@ -34,24 +35,11 @@ class ExtGpg extends Api {
     this.logger = this.ctx.grc_bfx.caller.logger
     this.db = db || this.ctx.dbMongo_m0.db
 
+    responder.inject({ logger: this.logger })
+
     return this.db
       .collection('signatures')
       .createIndex({ fileHash: 1 })
-  }
-
-  async _responser (handler, name, cb) {
-    try {
-      const res = await handler()
-
-      if (!cb) return res
-      cb(null, res)
-    } catch (err) {
-      const str = `METHOD_NAME: ${name}`
-      this.logger.error(`\n  - ${str}\n  - ${err.stack || err}`)
-
-      if (cb) cb(err)
-      else throw err
-    }
   }
 }
 
