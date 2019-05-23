@@ -3,21 +3,29 @@
 const { Api } = require('bfx-wrk-api')
 
 const {
+  checkArgs,
+  checkFile
+} = require('./helpers')
+const {
   getDigitalSignature,
   verifyDigitalSignature
 } = require('./sign-report')
 
 class ExtGpg extends Api {
-  // TODO: need to add parameters checking
   getDigitalSignature (space, file, args, cb) {
-    return this._responser(() => {
+    return this._responser(async () => {
+      checkFile(file)
+      await checkArgs(args, 'getDigitalSignatureArgsSchema')
+
       return getDigitalSignature(this, file, args)
     }, 'getDigitalSignature', cb)
   }
 
-  // TODO: need to add parameters checking
   verifyDigitalSignature (space, file, args, cb) {
-    return this._responser(() => {
+    return this._responser(async () => {
+      checkFile(file)
+      await checkArgs(args, 'verifyDigitalSignatureArgsSchema')
+
       return verifyDigitalSignature(this, file, args)
     }, 'verifyDigitalSignature', cb)
   }
