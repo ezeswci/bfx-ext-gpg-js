@@ -28,6 +28,10 @@ const verifyDigitalSignatureArgsSchema = {
       type: 'string',
       // eslint-disable-next-line no-useless-escape
       pattern: '^-----BEGIN PGP SIGNATURE-----(\s*)|(.*)-----END PGP SIGNATURE-----$'
+    },
+    fileHash: {
+      type: 'string',
+      pattern: '([0-9]|[a-fA-F])'
     }
   }
 }

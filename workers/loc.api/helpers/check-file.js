@@ -8,7 +8,10 @@ const _isHex = (h) => (
   (h.match(/([0-9]|[a-fA-F])/gm) || []).length === h.length
 )
 
-module.exports = (file) => {
+module.exports = (file, { fileHash } = {}) => {
+  if (fileHash) {
+    return
+  }
   if (!isBuffer(file) && !_isHex(file)) {
     throw new FileValidationError()
   }

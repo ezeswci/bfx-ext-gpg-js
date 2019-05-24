@@ -15,14 +15,16 @@ const {
 module.exports = async (
   extGpg,
   file,
-  { signature } = {}
+  { signature, fileHash } = {}
 ) => {
   try {
-    const fileHash = await getFileHash(file)
+    const _fileHash = typeof fileHash === 'string'
+      ? fileHash
+      : await getFileHash(file)
     const { db } = extGpg
     const publicKeysArmored = await findPublicKeys(
       db,
-      fileHash
+      _fileHash
     )
 
     for (const { publicKeyArmored } of publicKeysArmored) {
@@ -33,7 +35,7 @@ module.exports = async (
       const {
         signatures: [sign]
       } = await verify({
-        message: fromText(fileHash),
+        message: fromText(_fileHash),
         signature: await readArmored(signature),
         publicKeys: pubKeyObj
       })

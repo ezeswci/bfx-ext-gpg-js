@@ -15,8 +15,8 @@ const {
 class ExtGpg extends Api {
   getDigitalSignature (space, file, args, cb) {
     return responder(async () => {
-      checkFile(file)
       await checkArgs(args, 'getDigitalSignatureArgsSchema')
+      checkFile(file, args)
 
       return getDigitalSignature(this, file, args)
     }, 'getDigitalSignature', cb)
@@ -24,8 +24,8 @@ class ExtGpg extends Api {
 
   verifyDigitalSignature (space, file, args, cb) {
     return responder(async () => {
-      checkFile(file)
       await checkArgs(args, 'verifyDigitalSignatureArgsSchema')
+      checkFile(file, args)
 
       return verifyDigitalSignature(this, file, args)
     }, 'verifyDigitalSignature', cb)
