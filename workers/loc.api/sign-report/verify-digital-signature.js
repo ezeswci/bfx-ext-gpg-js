@@ -49,8 +49,7 @@ module.exports = async (
 
     return false
   } catch (err) {
-    const logger = extGpg.ctx.grc_bfx.caller.logger
-    logger.error(err.stack || err)
+    extGpg.logger.error(err.stack || err)
 
     return false
   }
