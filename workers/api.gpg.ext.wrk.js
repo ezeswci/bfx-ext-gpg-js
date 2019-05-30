@@ -12,6 +12,11 @@ const argv = require('yargs')
 
 const logger = require('./loc.api/logger')
 
+const isTestEnv = (
+  argv.env === 'test' ||
+  process.env.NODE_ENV === 'test'
+)
+
 class WrkExtGpgApi extends WrkApi {
   constructor (conf, ctx) {
     super(conf, ctx)
@@ -40,8 +45,12 @@ class WrkExtGpgApi extends WrkApi {
   init () {
     super.init()
 
+    const opts = isTestEnv
+      ? { mongoUri: this.ctx.mongoUri }
+      : {}
+
     const facs = [
-      [ 'fac', 'bfx-facs-db-mongo', 'm0', 'm0', {} ]
+      ['fac', 'bfx-facs-db-mongo', 'm0', 'm0', opts]
     ]
 
     this.setInitFacs(facs)
